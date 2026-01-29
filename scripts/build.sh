@@ -7,7 +7,6 @@ set -e
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Directories
@@ -23,10 +22,6 @@ SRC_FILES=(
 # Print colored message
 log() {
   echo -e "${GREEN}[BUILD]${NC} $1"
-}
-
-warn() {
-  echo -e "${YELLOW}[WARN]${NC} $1"
 }
 
 error() {
@@ -79,21 +74,12 @@ build_firefox() {
   # Copy Firefox manifest
   cp "$ROOT_DIR/manifest.firefox.json" "$OUTPUT_DIR/manifest.json"
   
-  # Create zip (Firefox uses .xpi but .zip works for testing)
+  # Create zip
   cd "$OUTPUT_DIR"
   zip -r "../clauseguard-firefox.zip" . -x "*.DS_Store"
   cd "$ROOT_DIR"
   
   log "Firefox build complete: dist/clauseguard-firefox.zip"
-}
-
-# Build for Safari (preparation only - requires Xcode)
-build_safari() {
-  warn "Safari requires Xcode and xcrun safari-web-extension-converter"
-  warn "Run this command manually after Chrome build:"
-  echo ""
-  echo "  xcrun safari-web-extension-converter dist/chrome --project-location dist/safari --app-name ClauseGuard"
-  echo ""
 }
 
 # Main
@@ -112,17 +98,13 @@ main() {
     firefox)
       build_firefox
       ;;
-    safari)
-      build_safari
-      ;;
     all)
       build_chrome
       build_firefox
-      build_safari
       ;;
     *)
       error "Unknown target: $target"
-      echo "Usage: $0 [chrome|firefox|safari|all]"
+      echo "Usage: $0 [chrome|firefox|all]"
       exit 1
       ;;
   esac
