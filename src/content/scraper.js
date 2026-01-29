@@ -7,6 +7,9 @@
 (function() {
   'use strict';
 
+  // Browser API polyfill - use 'browser' (Firefox) or 'chrome' (Chrome/Edge)
+  const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
+
   // ===========================================================================
   // Configuration
   // ===========================================================================
@@ -132,7 +135,7 @@
    */
   function sendToBackground(type, data) {
     try {
-      chrome.runtime.sendMessage({ type, data });
+      browserAPI.runtime.sendMessage({ type, data });
     } catch {
       // Extension context invalidated - ignore silently
     }
@@ -346,7 +349,7 @@
   // Message Handler
   // ===========================================================================
 
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  browserAPI.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch (message.type) {
       case 'GET_LEGAL_LINKS':
         sendResponse({
