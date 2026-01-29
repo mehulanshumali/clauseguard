@@ -38,8 +38,8 @@ A Chrome extension that uses AI to analyze Terms of Service and Privacy Policies
 
 1. **Download/Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/tos-dr-ai.git
-   cd tos-dr-ai
+   git clone https://github.com/mehulanshumali/clauseguard.git
+   cd clauseguard
    ```
 
 2. **Load in Chrome**
@@ -75,7 +75,7 @@ A Chrome extension that uses AI to analyze Terms of Service and Privacy Policies
 ## Project Structure
 
 ```
-tos-dr-ai/
+clauseguard/
 ├── manifest.json           # Extension configuration (Manifest V3)
 ├── icons/                  # Extension icons
 ├── src/
