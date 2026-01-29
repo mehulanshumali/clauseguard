@@ -6,6 +6,7 @@
 
 import { analyzePolicyWithLLM } from '../utils/llm.js';
 import { RISK_GRADES } from '../utils/constants.js';
+import { storage, action, runtime } from '../utils/browser.js';
 
 // =============================================================================
 // State
@@ -27,9 +28,9 @@ async function updateBadge(tabId, grade) {
   const config = RISK_GRADES[grade] || RISK_GRADES['?'];
 
   await Promise.all([
-    chrome.action.setBadgeText({ tabId, text: grade }),
-    chrome.action.setBadgeBackgroundColor({ tabId, color: config.color }),
-    chrome.action.setTitle({ tabId, title: `ClauseGuard - ${config.label}` })
+    action.setBadgeText({ tabId, text: grade }),
+    action.setBadgeBackgroundColor({ tabId, color: config.color }),
+    action.setTitle({ tabId, title: `ClauseGuard - ${config.label}` })
   ]);
 }
 
@@ -38,7 +39,7 @@ async function updateBadge(tabId, grade) {
  * @param {number} tabId - Tab ID
  */
 async function clearBadge(tabId) {
-  await chrome.action.setBadgeText({ tabId, text: '' });
+  await action.setBadgeText({ tabId, text: '' });
 }
 
 /**
@@ -49,8 +50,8 @@ async function clearBadge(tabId) {
  */
 async function showIndicator(tabId, text, color) {
   await Promise.all([
-    chrome.action.setBadgeText({ tabId, text }),
-    chrome.action.setBadgeBackgroundColor({ tabId, color })
+    action.setBadgeText({ tabId, text }),
+    action.setBadgeBackgroundColor({ tabId, color })
   ]);
 }
 
@@ -127,7 +128,7 @@ async function handleAnalyzePolicy(data, tabId) {
 // Message Router
 // =============================================================================
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+runtime.onMessage.addListener((message, sender, sendResponse) => {
   const tabId = sender.tab?.id;
 
   switch (message.type) {
@@ -162,14 +163,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 // =============================================================================
 
 // Clean up when tabs close
-chrome.tabs.onRemoved.addListener((tabId) => {
-  analysisCache.delete(tabId);
-});
+// Note: Using chrome.tabs directly as onRemoved isn't commonly abstracted
+if (typeof chrome !== 'undefined' && chrome.tabs?.onRemoved) {
+  chrome.tabs.onRemoved.addListener((tabId) => {
+    analysisCache.delete(tabId);
+  });
+} else if (typeof browser !== 'undefined' && browser.tabs?.onRemoved) {
+  browser.tabs.onRemoved.addListener((tabId) => {
+    analysisCache.delete(tabId);
+  });
+}
 
 // Initialize on install
-chrome.runtime.onInstalled.addListener((details) => {
+runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
-    chrome.storage.local.set({
+    storage.set({
       settings: { endpoint: '', model: '', apiKey: '' },
       analyzedSites: {}
     });

@@ -6,6 +6,7 @@
 
 import { MAX_TEXT_LENGTH } from './constants.js';
 import { ANALYSIS_SYSTEM_PROMPT, getAnalysisUserPrompt } from './prompts.js';
+import { storage } from './browser.js';
 
 /** HTTP status code error messages */
 const HTTP_ERROR_MESSAGES = {
@@ -20,11 +21,11 @@ const HTTP_ERROR_MESSAGES = {
 };
 
 /**
- * Get stored API settings from chrome storage
+ * Get stored API settings from browser storage
  * @returns {Promise<Object>} User's API configuration
  */
 async function getSettings() {
-  const result = await chrome.storage.local.get('settings');
+  const result = await storage.get('settings');
   return result.settings || {};
 }
 

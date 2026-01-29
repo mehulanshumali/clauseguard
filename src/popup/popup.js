@@ -5,6 +5,7 @@
  */
 
 import { RISK_GRADES, DIRTY_DOZEN, POLICY_TYPES } from '../utils/constants.js';
+import { storage, tabs, runtime } from '../utils/browser.js';
 
 // =============================================================================
 // Configuration
@@ -86,8 +87,8 @@ async function init() {
 }
 
 async function initializeTab() {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  currentTabId = tab.id;
+  const tab = await tabs.getCurrent();
+  currentTabId = tab?.id;
 
   try {
     const url = new URL(tab.url);
@@ -100,7 +101,7 @@ async function initializeTab() {
 }
 
 async function checkSettingsStatus() {
-  const { settings } = await chrome.storage.local.get('settings');
+  const { settings } = await storage.get('settings');
 
   if (!isConfigured(settings)) {
     elements.scoreLabel.textContent = 'Setup Required';
@@ -119,7 +120,7 @@ function isConfigured(settings) {
 }
 
 async function loadSettings() {
-  const { settings = {} } = await chrome.storage.local.get('settings');
+  const { settings = {} } = await storage.get('settings');
   elements.apiEndpoint.value = settings.endpoint || '';
   elements.modelName.value = settings.model || '';
   elements.apiKey.value = settings.apiKey || '';
@@ -137,7 +138,7 @@ async function saveSettingsHandler() {
     return;
   }
 
-  await chrome.storage.local.set({ settings });
+  await storage.set({ settings });
 
   // Show success feedback
   const btn = elements.saveSettings;
@@ -174,7 +175,7 @@ function closeSettings() {
 // =============================================================================
 
 async function startAnalysis() {
-  const { settings } = await chrome.storage.local.get('settings');
+  const { settings } = await storage.get('settings');
 
   if (!isConfigured(settings)) {
     openSettings();
@@ -201,7 +202,7 @@ async function startAnalysis() {
 
 async function getPageContent() {
   try {
-    const response = await chrome.tabs.sendMessage(currentTabId, { type: 'EXTRACT_POLICY' });
+    const response = await tabs.sendMessage(currentTabId, { type: 'EXTRACT_POLICY' });
 
     if (!response?.text || response.text.length < 100) {
       throw new Error('Could not extract policy text. Make sure you\'re on a Terms of Service or Privacy Policy page.');
@@ -214,7 +215,7 @@ async function getPageContent() {
 }
 
 async function requestAnalysis(pageResponse) {
-  return chrome.runtime.sendMessage({
+  return runtime.sendMessage({
     type: 'ANALYZE_POLICY',
     data: {
       policyText: pageResponse.text,
@@ -294,7 +295,7 @@ function displayCriticalQuotes(quotes) {
 }
 
 async function checkExistingAnalysis() {
-  const response = await chrome.runtime.sendMessage({
+  const response = await runtime.sendMessage({
     type: 'GET_ANALYSIS',
     tabId: currentTabId
   });
@@ -306,7 +307,7 @@ async function checkExistingAnalysis() {
 
 async function fetchLegalLinks() {
   try {
-    const response = await chrome.tabs.sendMessage(currentTabId, { type: 'GET_LEGAL_LINKS' });
+    const response = await tabs.sendMessage(currentTabId, { type: 'GET_LEGAL_LINKS' });
     renderLegalLinks(response);
   } catch {
     elements.linksSection.innerHTML = '<p class="no-links">Refresh the page to enable scanning.</p>';
