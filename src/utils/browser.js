@@ -1,25 +1,19 @@
 /**
  * ClauseGuard - Browser API Abstraction Layer
- * Provides unified API for Chrome, Firefox, and Safari
+ * Provides unified API for Chrome and Firefox
  * @module utils/browser
  */
 
 /**
  * Detect current browser environment
- * @returns {'chrome' | 'firefox' | 'safari' | 'unknown'}
+ * @returns {'chrome' | 'firefox' | 'unknown'}
  */
 export function detectBrowser() {
-  if (typeof chrome !== 'undefined' && chrome.runtime?.id) {
-    if (typeof browser !== 'undefined') {
-      return 'firefox';
-    }
-    if (navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome')) {
-      return 'safari';
-    }
-    return 'chrome';
-  }
   if (typeof browser !== 'undefined' && browser.runtime?.id) {
     return 'firefox';
+  }
+  if (typeof chrome !== 'undefined' && chrome.runtime?.id) {
+    return 'chrome';
   }
   return 'unknown';
 }
@@ -30,7 +24,7 @@ export function detectBrowser() {
  * This returns a unified Promise-based API
  */
 const api = (() => {
-  // Firefox and Safari use the 'browser' namespace with Promises
+  // Firefox uses the 'browser' namespace with Promises
   if (typeof browser !== 'undefined' && browser.runtime) {
     return browser;
   }

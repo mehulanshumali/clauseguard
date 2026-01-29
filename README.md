@@ -148,7 +148,7 @@ API Key: ollama (any non-empty value)
 
 ## Roadmap
 
-- [ ] Firefox/Safari extension support
+- [ ] More browser support
 - [ ] Historical policy change tracking
 - [ ] Policy comparison between sites
 - [ ] Browser sync for settings
