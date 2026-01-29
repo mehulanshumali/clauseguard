@@ -2,7 +2,9 @@
 
 **Your Personal Legal Shield for the Internet**
 
-A Chrome extension that uses AI to analyze Terms of Service and Privacy Policies, protecting users from predatory clauses and data harvesting practices.
+A browser extension that uses AI to analyze Terms of Service and Privacy Policies, protecting users from predatory clauses and data harvesting practices.
+
+**Supported Browsers:** Chrome, Firefox, Edge, Safari (see [Safari Guide](docs/SAFARI.md))
 
 ## Features
 
@@ -42,11 +44,20 @@ A Chrome extension that uses AI to analyze Terms of Service and Privacy Policies
    cd clauseguard
    ```
 
-2. **Load in Chrome**
-   - Open `chrome://extensions/`
+2. **Load in your browser**
+
+   **Chrome / Edge:**
+   - Open `chrome://extensions/` (or `edge://extensions/`)
    - Enable **Developer mode** (top right toggle)
    - Click **Load unpacked**
    - Select the project folder
+
+   **Firefox:**
+   - Open `about:debugging#/runtime/this-firefox`
+   - Click **Load Temporary Add-on**
+   - Select `manifest.firefox.json` from the project folder
+
+   **Safari:** See [Safari Guide](docs/SAFARI.md)
 
 3. **Configure API Settings**
    - Click the ClauseGuard icon in your toolbar
