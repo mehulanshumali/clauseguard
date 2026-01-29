@@ -5,6 +5,11 @@ PRD.md
 icons/generate-icons.html
 icons/README.md
 
+# Build output
+dist/
+*.zip
+*.xpi
+
 # Dependencies
 node_modules/
 package-lock.json
