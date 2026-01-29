@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>ClauseGuard</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <span class="logo-icon">🛡️</span>
+        <span class="logo-text">ClauseGuard</span>
+      </div>
+      <button class="settings-btn" id="settingsBtn" title="Settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"></path>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Domain Info -->
+    <div class="domain-bar" id="domainBar">
+      <span class="domain-name" id="domainName">Loading...</span>
+    </div>
+
+    <!-- Tab Navigation -->
+    <nav class="tabs">
+      <button class="tab active" data-tab="overview">Overview</button>
+      <button class="tab" data-tab="dirty-dozen">Dirty Dozen</button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="content">
+      <!-- Overview Tab -->
+      <section class="tab-content active" id="overview">
+        <!-- Risk Score Card -->
+        <div class="score-card" id="scoreCard">
+          <div class="score-badge" id="scoreBadge">?</div>
+          <div class="score-info">
+            <h2 class="score-label" id="scoreLabel">Not Analyzed</h2>
+            <p class="score-desc" id="scoreDesc">Click "Scan" to analyze this site's policies.</p>
+          </div>
+        </div>
+
+        <!-- Scan Button -->
+        <button class="scan-btn" id="scanBtn">
+          <span class="scan-icon">🔍</span>
+          <span>Scan Legal Policies</span>
+        </button>
+
+        <!-- Loading State -->
+        <div class="loading hidden" id="loadingState">
+          <div class="skeleton-loader">
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line short"></div>
+            <div class="skeleton-line"></div>
+          </div>
+          <p class="loading-text">Scanning legalese...</p>
+        </div>
+
+        <!-- Detected Links -->
+        <div class="links-section" id="linksSection">
+          <h3>Detected Legal Documents</h3>
+          <ul class="links-list" id="linksList"></ul>
+        </div>
+
+        <!-- Highlights -->
+        <div class="highlights-section hidden" id="highlightsSection">
+          <div class="highlights-good" id="highlightsGood">
+            <h4>✅ Good Practices</h4>
+            <ul id="goodList"></ul>
+          </div>
+          <div class="highlights-bad" id="highlightsBad">
+            <h4>⚠️ Concerns</h4>
+            <ul id="badList"></ul>
+          </div>
+        </div>
+
+        <!-- Critical Quotes -->
+        <div class="quotes-section hidden" id="quotesSection">
+          <h3>🔴 Critical Clauses</h3>
+          <div class="quotes-list" id="quotesList"></div>
+        </div>
+      </section>
+
+      <!-- Dirty Dozen Tab -->
+      <section class="tab-content" id="dirty-dozen">
+        <div class="dozen-intro">
+          <p>The 12 critical risk categories we check for:</p>
+        </div>
+        <div class="dozen-grid" id="dozenGrid">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Settings Panel (Hidden by default) -->
+    <div class="settings-panel hidden" id="settingsPanel">
+      <div class="settings-header">
+        <h3>Settings</h3>
+        <button class="close-btn" id="closeSettings">×</button>
+      </div>
+      <div class="settings-content">
+        <div class="form-group">
+          <label for="apiEndpoint">API Endpoint</label>
+          <input type="text" id="apiEndpoint" placeholder="https://api.openai.com/v1">
+          <small>Must end with /v1 (e.g., https://api.groq.com/openai/v1)</small>
+        </div>
+        <div class="form-group">
+          <label for="modelName">Model Name</label>
+          <input type="text" id="modelName" placeholder="gpt-4o-mini">
+          <small>e.g., gpt-4o, llama-3.1-70b, gemini-2.5-flash</small>
+        </div>
+        <div class="form-group">
+          <label for="apiKey">API Key</label>
+          <input type="password" id="apiKey" placeholder="Enter your API key">
+          <small>Your key is stored locally and never shared.</small>
+        </div>
+        <div class="presets">
+          <small>Quick presets:</small>
+          <div class="preset-buttons">
+            <button type="button" class="preset-btn" data-preset="openai">OpenAI</button>
+            <button type="button" class="preset-btn" data-preset="groq">Groq</button>
+            <button type="button" class="preset-btn" data-preset="gemini">Gemini</button>
+          </div>
+        </div>
+        <button class="save-btn" id="saveSettings">Save Settings</button>
+      </div>
+    </div>
+
+    <!-- Footer (always visible) -->
+    <footer class="footer">
+      <span>🔒 Your data stays private. Zero-knowledge architecture.</span>
+    </footer>
+  </div>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>
